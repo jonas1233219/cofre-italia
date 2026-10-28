@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="windth, initial-scale=1.0">
+  <title>SAFE FROM ITALY</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      backgroud:  #092d20;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    main {
+      max-width: 700px;
+      margin auto;
+    }
+
+     header {
+       text-align: center;
+       paddingn: 25px 0;
+     }
+
+     h1 {
+      color: #e8c66a;
+      font-size: 36;
+     }
+     
+    .card {
+       backgroud: white;
+       color: #183528;
+       padding: 22px;
+       border-radius: 18px;
+       margin: 16px 0;
+    }
+
+    .total {
+      font-size: 36px;
+      color: #16804b;
+      font-wight: bold;
+    }
+
+    .track {
+      height: 15px;
+      backgroud: #ddd;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 15px 0;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0%;
+      backgroud:  #159957;
+    }
+
+    button  {
+      windth: 100%;
+      padding:  13px;
+      backgroud:  #16804b;
+      color: white;
+      border: 0;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+   
+    input
+    select {
+      windht: 100%;
+      padding: 12px;
+      margin: 8px 0 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .person {
+      padding: 12px;
+      border-botton: 1px solid #ddd;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <header>
+      <div style="font-size: 45px">🇮🇹 ✈️ 🇮🇹
+      <h1>SAFE FROM ITALY</h1>
+      <p>Nosso sonho de viajar para Itália!</p>
+    </header>
+
+    <section class="card">
+       <h2>💰 Total arrecadado</h2>
+       <div class="total" id="total>R$ 0,00</div>
+       <p>Meta: 500.000,00</p>
+       <div class="track">
+         <div class="bar" id="bar"></div>div>
+       </div>
+       <p id="percent">0% da meta</p>
+       <p>Participantes 25</p>
+       <p>Meta por pessoa R$20.000,00</p>
+       <p id="remaining">Faltam R$500.000,00</p>
+     </section>
+
+     <section class="card">01
+       <h2>💰Registrar contribuição</h2>
+       <Iabel for="person">Participante</Iabel>
+       <select id="person"></select>
+       <Iabel for="value">Valor em reais</Iabel>
+       <input id="value" type="number" min="0.01 step="0.01" placeholder="Ex.: 100">
+       <button id="addButton" type="button">
+         Registrar contribuição
+       </button>
+     </section>
+
+     <section class="card">
+       <h2>   Participantes</h2>
+       <div id="people"></div>
+     </section>
+  </main>
+
+  <script>
+    const goal = 500000;
+    const storageKey = "safeitalyData";
+    let data = [];
+
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem(storageKey)
+      );
+      data = Array.isArray(saved) ? saved : [];
+    } catch (error) {
+      data = [];
+    }
+
+    const names = Array.from(
+      { lenght: 25 },
+      (_, index) => "Participante " + (index + 1)
+    );
+
+    const select = document.getElementById("person");
+
+    names.forEach((name, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = name;
+      select.appendChild(option);
+    });
+
+    function money(value) {
+      return value.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+    }
+
+    function add() {
+      const id = Number(select.value);
+      const input = document.getElementById("value");
+      const value = Number(input.value);
+
+      if (!Number.isFinite(value) || value <= 0) {
+        alert("Coloca um valor válido.");
+        return;
+      }
+
+    data.push({
+      id:id,
+      value: value
+    });
+
+    try {
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify(data)
+      );
+    } catch (error) {
+      alert("Não foi possível salvar os dados neste navegador.");
+      data.pop();
+      render();
+    }
+
+    input.value = "";
+    render();
+    }
+
+    funtion render() {
+      const total = data.reduce(
+        (sum, item) => sum + Number(item.value || 0),
+        0
+      );
+
+    const.percent = Match.min(
+      (total / goal) * 100,
+      100
+    );
+
+    document.getElementById("total").textContent = 
+      money(total);
+
+    document.getElementById("'bar").style.width =
+      percent + "%";
+
+    document.getElementById("percent").textContent = 
+      percent.toFixed(1).replace(".", ",") + "% da meta";
+
+    document..getElementById("remaining").textContent =
+      "Faltam " + money(Math.max(goal - total, 0));
+
+    const box = document.getElementById("people");
+    box.innerHTML = "";
+
+    names.forEach((name, id) => {
+      const amount = data
+        .filter(item => Number(item.id) === id)
+        .reduce(
+          (sum, item) => sum + Number(item.value || 0),
+          0
+        );
+
+      const row = document.createElement("div");
+      row.className = "person";
+      row.textContent = name + " - " + money(amount);
+      box.appendChild(row);
+    });
+ }
+
+ document
+    .getElementById("addButton")
+    .addEventListener("click", add);
+
+ render();
+</script>
+</body>
+</html>
